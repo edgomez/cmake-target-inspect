@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(TargetInpectorTemplate LANGUAGES C CXX)
+
+set(REPLY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/reply/v1/")
+
+# create a fresh reply dir
+file(REMOVE_RECURSE "${REPLY_DIR}")
+file(MAKE_DIRECTORY "${REPLY_DIR}")
+
+# The lists are set by TargetInspector when the file is created
+set(OUTPUT_VARNAME "@__ti_OUTPUT_VARNAME@")
+set(INSPECT_VARIABLE "@__ti_INSPECT_VARIABLE@")
+
+# Iterate over the variables to be inspected
+foreach(ivarname IN LISTS INSPECT_VARIABLE)
+  # Pop the corresponding output varname
+  list(GET OUTPUT_VARNAME 0 ovarname)
+  list(REMOVE_AT OUTPUT_VARNAME 0)
+
+  # Write the variable value in a file whose filename is the desired output
+  # variable name
+  file(WRITE "${REPLY_DIR}/${ovarname}" "${${ivarname}}")
+endforeach()
